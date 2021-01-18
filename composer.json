@@ -1,0 +1,21 @@
+{
+    "name": "ayesh/geo-ip-tree-builder",
+    "description": "IP to Country Geo IP Tree Builder for Maxmind database",
+    "type": "library",
+    "require": {
+        "php": "^8.0",
+        "markrogoyski/ipv4-subnet-calculator": "^3.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Ayesh\\GeoIPTreeBuilder\\": "src/"
+        }
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ayesh Karunaratne",
+            "email": "ayesh@aye.sh"
+        }
+    ]
+}
