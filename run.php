@@ -2,7 +2,17 @@
 
 use Ayesh\GeoIPTreeBuilder\Builder;
 
-require __DIR__ . '/vendor/autoload.php';
+if (file_exists(__DIR__ . '/vendor/autoload.php')) {
+    require __DIR__ . '/vendor/autoload.php';
+}
+elseif (file_exists(__DIR__ . '/../../../vendor/autoload.php')) {
+    require __DIR__ . '/../../../vendor/autoload.php';
+}
+else {
+    echo 'Could not run autoloader';
+    die(1);
+}
+
 
 $builder = new Builder(
     dataPath: $argv[1] ?? 'input/GeoLite2-Country-Blocks-IPv4.csv',
