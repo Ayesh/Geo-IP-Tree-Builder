@@ -73,7 +73,7 @@ class Builder {
 
         while ($line = fgetcsv($file)) {
             [$ip_cidr, $country_code] = [$line[static::IP_CIDR_POSITION], $line[static::IP_LOCATION_POSITION]];
-            $country_code = $locations[$country_code] ?? $country_code;
+            $country_code = $this->locations[$country_code] ?? $country_code;
             $prefix = explode('.', $ip_cidr, 2);
 
 
