@@ -49,7 +49,6 @@ class Builder {
         while ($line = fgetcsv($file)) {
             $this->locations[$line[static::LOCATION_ID_POSITION]] = $line[static::LOCATION_ISO_POSITION];
         }
-
         fclose($file);
     }
 
@@ -76,17 +75,6 @@ class Builder {
             $country_code = $this->locations[$country_code] ?? $country_code;
             $prefix = explode('.', $ip_cidr, 2);
 
-
-
-            if ($last_country === $country_code && $last_prefix === $prefix) {
-                continue;
-            }
-
-            $last_country = $country_code;
-            $last_prefix = $prefix;
-
-
-
             $ip_cidr = explode('/', $ip_cidr);
             [$ip, $cidr] = $ip_cidr;
 
@@ -96,9 +84,18 @@ class Builder {
             $storing_ip = ip2long('0.' . $usage[1]);
 
             $ip_parts = explode('.', $ip);
+
+            $force_store = false;
             if (!isset($this->processedData[(int) $ip_parts[0]])) {
                 $this->processedData[(int) $ip_parts[0]] = [];
+                $force_store = true;
             }
+
+            if ($last_country === $country_code && empty($force_store)) {
+                continue;
+            }
+
+            $last_country = $country_code;
 
             $this->processedData[(int) $ip_parts[0]][(int) $storing_ip] = $this->locations[$country_code] ?? $country_code;
         }
