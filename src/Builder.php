@@ -2,27 +2,38 @@
 
 namespace Ayesh\GeoIPTreeBuilder;
 
+use InvalidArgumentException;
 use IPv4\SubnetCalculator;
+use RuntimeException;
 
 class Builder {
     private array $locations = [];
     private array $processedData = [];
 
-    private const LOCATION_ID_POSITION = 0;
-    private const LOCATION_ISO_POSITION = 4;
-    private const IP_CIDR_POSITION = 0;
-    private const IP_LOCATION_POSITION = 1;
+    private readonly string $dataPath;
+    private readonly string $locationListPath;
 
-    public function __construct(private string $dataPath, private string $locationListPath, private string $target_dir) {
+    private readonly string $target_dir;
+
+    private const int LOCATION_ID_POSITION = 0;
+    private const int LOCATION_ISO_POSITION = 4;
+    private const int IP_CIDR_POSITION = 0;
+    private const int IP_LOCATION_POSITION = 1;
+
+    public function __construct(string $dataPath, string $locationListPath, string $target_dir) {
+        $this->dataPath = $dataPath;
+        $this->locationListPath = $locationListPath;
+        $this->target_dir = $target_dir;
+
         if (!file_exists($target_dir)) {
-            throw new \InvalidArgumentException('Target directory is not reachable');
+            throw new InvalidArgumentException('Target directory is not reachable');
         }
         if (!file_exists($dataPath)) {
-            throw new \InvalidArgumentException('IP range source file is unavailable.');
+            throw new InvalidArgumentException('IP range source file is unavailable.');
         }
 
         if (!file_exists($locationListPath)) {
-            throw new \InvalidArgumentException('Location source file is unavailable.');
+            throw new InvalidArgumentException('Location source file is unavailable.');
         }
     }
 
@@ -35,15 +46,15 @@ class Builder {
     private function primeLocations(): void {
         $file = @fopen($this->locationListPath, 'rb');
         if (!$file) {
-            throw new \RuntimeException('Unable to open the locations file');
+            throw new RuntimeException('Unable to open the locations file');
         }
 
         $headers = fgetcsv($file);
         if ($headers[static::LOCATION_ID_POSITION] !== 'geoname_id') {
-            throw new \InvalidArgumentException('Location source file is invalid: header-' . static::LOCATION_ID_POSITION . '. is not "geoname_id"');
+            throw new InvalidArgumentException('Location source file is invalid: header-' . static::LOCATION_ID_POSITION . '. is not "geoname_id"');
         }
         if ($headers[static::LOCATION_ISO_POSITION] !== 'country_iso_code') {
-            throw new \InvalidArgumentException('Location source file is invalid: header-' . static::LOCATION_ISO_POSITION . '. is not "country_iso_code"');
+            throw new InvalidArgumentException('Location source file is invalid: header-' . static::LOCATION_ISO_POSITION . '. is not "country_iso_code"');
         }
 
         while ($line = fgetcsv($file)) {
@@ -55,15 +66,15 @@ class Builder {
     private function parseDataFile(): void {
         $file = @fopen($this->dataPath, 'rb');
         if (!$file) {
-            throw new \RuntimeException('Unable to open the data file');
+            throw new RuntimeException('Unable to open the data file');
         }
 
         $headers = fgetcsv($file);
         if ($headers[static::IP_CIDR_POSITION] !== 'network') {
-            throw new \InvalidArgumentException('Data source file is invalid: header-' . static::IP_CIDR_POSITION . '. is not "network"');
+            throw new InvalidArgumentException('Data source file is invalid: header-' . static::IP_CIDR_POSITION . '. is not "network"');
         }
         if ($headers[static::IP_LOCATION_POSITION] !== 'geoname_id') {
-            throw new \InvalidArgumentException('Data source file is invalid: header-' . static::IP_LOCATION_POSITION . '. is not "geoname_id"');
+            throw new InvalidArgumentException('Data source file is invalid: header-' . static::IP_LOCATION_POSITION . '. is not "geoname_id"');
         }
 
 

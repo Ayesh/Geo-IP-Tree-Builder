@@ -4,6 +4,7 @@
     "type": "library",
     "require": {
         "php": "^8.4",
+        "ext-json": "*",
         "markrogoyski/ipv4-subnet-calculator": "^v4.0.0"
     },
     "autoload": {
